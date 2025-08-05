@@ -1,5 +1,4 @@
 "use client"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
@@ -11,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Separator } from "@/components/ui/separator"
 import { Eye, EyeOff, Loader2, Mail, Lock, User, AlertCircle } from "lucide-react"
-// import { signupWithEmail, loginWithGoogle } from "../firebase/auth"
+import { useAuth } from "@/hooks/use-auth"
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -28,6 +27,7 @@ export default function SignupPage() {
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const router = useRouter()
+  const { signupWithEmail, loginWithGoogle } = useAuth()
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
@@ -74,10 +74,8 @@ export default function SignupPage() {
     setError("")
 
     try {
-      // const userRole = await signupWithEmail(formData.email, formData.password, formData.role)
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-      router.push("/login")
+      const userRole = await signupWithEmail(formData.email, formData.password, formData.role)
+      router.push("/sign-in")
     } catch (err) {
       setError(err instanceof Error ? err.message : "Signup failed. Please try again.")
     } finally {
@@ -95,10 +93,8 @@ export default function SignupPage() {
     setError("")
 
     try {
-      // const userRole = await loginWithGoogle(formData.role)
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-      router.push(`/${formData.role}`)
+      const userRole = await loginWithGoogle(formData.role)
+      router.push(`/dashboard/${userRole}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Google signup failed. Please try again.")
     } finally {

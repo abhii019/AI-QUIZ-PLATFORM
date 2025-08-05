@@ -19,4 +19,5 @@ export const googleProvider = new GoogleAuthProvider();
 export const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 export { provider }; // Exporting provider for use in auth functions
-
+export default app; // Export the initialized app for use in other files  
+export { app }; // Export the initialized app for use in other files

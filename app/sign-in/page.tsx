@@ -12,7 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Separator } from "@/components/ui/separator"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Eye, EyeOff, Loader2, Mail, Lock, User, AlertCircle } from "lucide-react"
-// import { loginWithEmail, loginWithGoogle } from "../firebase/auth"
+import { useAuth } from "@/hooks/use-auth"
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -28,6 +28,7 @@ export default function LoginPage() {
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const router = useRouter()
+  const { loginWithEmail, loginWithGoogle } = useAuth()
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
@@ -62,11 +63,8 @@ export default function LoginPage() {
     setError("")
 
     try {
-      // const userRole = await loginWithEmail(formData.email, formData.password)
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-      const userRole = "teacher" // This would come from your auth function
-      router.push(`/${userRole}`)
+      const userRole = await loginWithEmail(formData.email, formData.password)
+      router.push(`/dashboard/${userRole}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed. Please check your credentials.")
     } finally {
@@ -84,10 +82,8 @@ export default function LoginPage() {
     setError("")
 
     try {
-      // const userRole = await loginWithGoogle(formData.role)
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-      router.push(`/${formData.role}`)
+      const userRole = await loginWithGoogle(formData.role)
+      router.push(`/dashboard/${userRole}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Google login failed. Please try again.")
     } finally {
@@ -251,7 +247,7 @@ export default function LoginPage() {
         <CardFooter>
           <p className="text-center text-sm text-muted-foreground w-full">
             {"Don't have an account? "}
-            <Link href="/signup" className="font-medium text-primary hover:underline">
+            <Link href="/sign-up" className="font-medium text-primary hover:underline">
               Sign up
             </Link>
           </p>
