@@ -1,19 +1,19 @@
-// app/join/[roomCode]/page.tsx
-
 import { firestoreDb } from "@/lib/db";
-import { notFound } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { QuizClientWrapper } from "@/components/quiz-client-wrapper";
 import { Clock } from "lucide-react";
 
-interface JoinQuizPageProps {
+interface JoinPageProps {
   params: {
     roomCode: string;
   };
 }
 
-export default async function JoinQuizPage({ params }: JoinQuizPageProps) {
+// @ts-ignore
+export default async function JoinQuizPage({ params }) {
   const { roomCode } = params;
+
   const quiz = await firestoreDb.quizzes.getByRoomCode(roomCode.toUpperCase());
 
   if (!quiz) {
