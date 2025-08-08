@@ -4,7 +4,7 @@
 import { createContext, useContext, useEffect, useState } from "react"
 import { onAuthStateChanged, getAuth, signOut, User } from "firebase/auth"
 import { loginWithGoogle, loginWithEmail, signupWithEmail } from "./auth-utils"
-import { app } from "./config" // make sure this is your initialized Firebase app
+import app  from "./config" // make sure this is your initialized Firebase app
 
 interface AuthContextType {
   user: User | null
