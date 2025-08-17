@@ -92,9 +92,9 @@ export function QuizViewer({ quiz, onSubmit }: QuizViewerProps) {
               </CardContent>
             </Card>
           ))}
-          <Button
+          <Button className="bg-emerald-400  hover:via-teal-800"
             onClick={handleSubmit}
-            disabled={isSubmitting || Object.keys(selectedAnswers).length !== quiz.questions.length}
+            disabled={isSubmitting || Object.keys(selectedAnswers).length !== quiz.questions.length }
           >
             {isSubmitting ? "Submitting..." : "Submit Quiz"}
           </Button>

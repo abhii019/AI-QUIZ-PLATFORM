@@ -92,11 +92,13 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <Card className="w-full max-w-md shadow-lg">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 p-4">
+      <Card className="w-full max-w-md shadow-xl border-0 bg-white/80 backdrop-blur-sm">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Welcome Back</CardTitle>
-          <CardDescription className="text-center">Enter your credentials to access your account</CardDescription>
+          <CardTitle className="text-2xl font-bold text-center text-emerald-800">Welcome Back</CardTitle>
+          <CardDescription className="text-center text-emerald-600">
+            Enter your credentials to access your account
+          </CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-4">
@@ -108,9 +110,11 @@ export default function LoginPage() {
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="role">Role (for Google login)</Label>
+            <Label htmlFor="role" className="text-emerald-700 font-medium">
+              Role (for Google login)
+            </Label>
             <Select value={formData.role} onValueChange={(value) => handleInputChange("role", value)}>
-              <SelectTrigger>
+              <SelectTrigger className="border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400">
                 <SelectValue placeholder="Select your role" />
               </SelectTrigger>
               <SelectContent>
@@ -131,16 +135,18 @@ export default function LoginPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="text-emerald-700 font-medium">
+              Email
+            </Label>
             <div className="relative">
-              <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Mail className="absolute left-3 top-3 h-4 w-4 text-emerald-400" />
               <Input
                 id="email"
                 type="email"
                 placeholder="Enter your email"
                 value={formData.email}
                 onChange={(e) => handleInputChange("email", e.target.value)}
-                className={`pl-10 ${errors.email ? "border-red-500" : ""}`}
+                className={`pl-10 border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400 ${errors.email ? "border-red-500" : ""}`}
               />
             </div>
             {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
@@ -148,26 +154,28 @@ export default function LoginPage() {
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="password">Password</Label>
-              <Link href="/forgot-password" className="text-sm text-primary hover:underline">
+              <Label htmlFor="password" className="text-emerald-700 font-medium">
+                Password
+              </Label>
+              <Link href="/forgot-password" className="text-sm text-teal-600 hover:text-teal-700 hover:underline">
                 Forgot password?
               </Link>
             </div>
             <div className="relative">
-              <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Lock className="absolute left-3 top-3 h-4 w-4 text-emerald-400" />
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
                 value={formData.password}
                 onChange={(e) => handleInputChange("password", e.target.value)}
-                className={`pl-10 pr-10 ${errors.password ? "border-red-500" : ""}`}
+                className={`pl-10 pr-10 border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400 ${errors.password ? "border-red-500" : ""}`}
               />
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-emerald-500 hover:text-emerald-600"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -181,13 +189,18 @@ export default function LoginPage() {
               id="remember"
               checked={formData.rememberMe}
               onCheckedChange={(checked) => handleInputChange("rememberMe", checked as boolean)}
+              className="border-emerald-300 data-[state=checked]:bg-emerald-500 data-[state=checked]:border-emerald-500"
             />
-            <Label htmlFor="remember" className="text-sm font-normal">
+            <Label htmlFor="remember" className="text-sm font-normal text-emerald-700">
               Remember me
             </Label>
           </div>
 
-          <Button onClick={handleLogin} className="w-full" disabled={isLoading}>
+          <Button
+            onClick={handleLogin}
+            className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg"
+            disabled={isLoading}
+          >
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -203,14 +216,14 @@ export default function LoginPage() {
               <Separator className="w-full" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+              <span className="bg-white px-2 text-emerald-600">Or continue with</span>
             </div>
           </div>
 
           <Button
             variant="outline"
             onClick={handleGoogleLogin}
-            className="w-full bg-transparent"
+            className="w-full bg-transparent border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 text-emerald-700"
             disabled={isGoogleLoading}
           >
             {isGoogleLoading ? (
@@ -245,9 +258,9 @@ export default function LoginPage() {
         </CardContent>
 
         <CardFooter>
-          <p className="text-center text-sm text-muted-foreground w-full">
+          <p className="text-center text-sm text-emerald-600 w-full">
             {"Don't have an account? "}
-            <Link href="/sign-up" className="font-medium text-primary hover:underline">
+            <Link href="/sign-up" className="font-medium text-teal-600 hover:text-teal-700 hover:underline">
               Sign up
             </Link>
           </p>

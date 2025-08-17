@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,11 +13,13 @@ import { Eye, EyeOff, Loader2, Mail, Lock, User, AlertCircle } from "lucide-reac
 import { useAuth } from "@/hooks/use-auth"
 
 export default function SignupPage() {
+  const searchParams = useSearchParams()
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     confirmPassword: "",
-    role: "",
+    role: searchParams.get("role") || "",
   })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -103,11 +105,13 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <Card className="w-full max-w-md shadow-lg">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 p-4">
+      <Card className="w-full max-w-md shadow-xl border-0 bg-white/80 backdrop-blur-sm">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Create Account</CardTitle>
-          <CardDescription className="text-center">Enter your details to create your account</CardDescription>
+          <CardTitle className="text-2xl font-bold text-center text-emerald-800">Create Account</CardTitle>
+          <CardDescription className="text-center text-emerald-600">
+            Enter your details to create your account
+          </CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-4">
@@ -119,9 +123,13 @@ export default function SignupPage() {
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="role">Role</Label>
+            <Label htmlFor="role" className="text-emerald-700 font-medium">
+              Role
+            </Label>
             <Select value={formData.role} onValueChange={(value) => handleInputChange("role", value)}>
-              <SelectTrigger className={errors.role ? "border-red-500" : ""}>
+              <SelectTrigger
+                className={`border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400 ${errors.role ? "border-red-500" : ""}`}
+              >
                 <SelectValue placeholder="Select your role" />
               </SelectTrigger>
               <SelectContent>
@@ -143,38 +151,44 @@ export default function SignupPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="text-emerald-700 font-medium">
+              Email
+            </Label>
             <div className="relative">
-              <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Mail className="absolute left-3 top-3 h-4 w-4 text-emerald-400" />
               <Input
                 id="email"
                 type="email"
                 placeholder="Enter your email"
                 value={formData.email}
                 onChange={(e) => handleInputChange("email", e.target.value)}
-                className={`pl-10 ${errors.email ? "border-red-500" : ""}`}
+                className={`pl-10 border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400 ${errors.email ? "border-red-500" : ""}`}
               />
             </div>
             {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password" className="text-emerald-700 font-medium">
+              Password
+            </Label>
             <div className="relative">
-              <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Lock className="absolute left-3 top-3 h-4 w-4 text-emerald-400" />
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
                 value={formData.password}
                 onChange={(e) => handleInputChange("password", e.target.value)}
-                className={`pl-10 pr-10 ${errors.password ? "border-red-500" : ""}`}
+                className={`pl-10 pr-10 border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400 ${
+                  errors.password ? "border-red-500" : ""
+                }`}
               />
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-emerald-500 hover:text-emerald-600"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -184,22 +198,26 @@ export default function SignupPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm Password</Label>
+            <Label htmlFor="confirmPassword" className="text-emerald-700 font-medium">
+              Confirm Password
+            </Label>
             <div className="relative">
-              <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Lock className="absolute left-3 top-3 h-4 w-4 text-emerald-400" />
               <Input
                 id="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm your password"
                 value={formData.confirmPassword}
                 onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
-                className={`pl-10 pr-10 ${errors.confirmPassword ? "border-red-500" : ""}`}
+                className={`pl-10 pr-10 border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400 ${
+                  errors.confirmPassword ? "border-red-500" : ""
+                }`}
               />
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-emerald-500 hover:text-emerald-600"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
                 {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -208,7 +226,11 @@ export default function SignupPage() {
             {errors.confirmPassword && <p className="text-sm text-red-500">{errors.confirmPassword}</p>}
           </div>
 
-          <Button onClick={handleSignup} className="w-full" disabled={isLoading}>
+          <Button
+            onClick={handleSignup}
+            className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg"
+            disabled={isLoading}
+          >
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -224,14 +246,14 @@ export default function SignupPage() {
               <Separator className="w-full" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+              <span className="bg-white px-2 text-emerald-600">Or continue with</span>
             </div>
           </div>
 
           <Button
             variant="outline"
             onClick={handleGoogleSignup}
-            className="w-full bg-transparent"
+            className="w-full bg-transparent border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 text-emerald-700"
             disabled={isGoogleLoading}
           >
             {isGoogleLoading ? (
@@ -266,9 +288,9 @@ export default function SignupPage() {
         </CardContent>
 
         <CardFooter>
-          <p className="text-center text-sm text-muted-foreground w-full">
+          <p className="text-center text-sm text-emerald-600 w-full">
             Already have an account?{" "}
-            <Link href="/sign-in" className="font-medium text-primary hover:underline">
+            <Link href="/sign-in" className="font-medium text-teal-600 hover:text-teal-700 hover:underline">
               Sign in
             </Link>
           </p>
