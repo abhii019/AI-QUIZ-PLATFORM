@@ -24,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-gradient-to-br from-blue-300 via-purple-400 to-cyan-950">
+      <body className="min-h-screen">
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

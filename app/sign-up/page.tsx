@@ -1,114 +1,148 @@
-"use client"
-import { useState } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Separator } from "@/components/ui/separator"
-import { Eye, EyeOff, Loader2, Mail, Lock, User, AlertCircle } from "lucide-react"
-import { useAuth } from "@/hooks/use-auth"
+"use client";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Separator } from "@/components/ui/separator";
+import {
+  Eye,
+  EyeOff,
+  Loader2,
+  Mail,
+  Lock,
+  User,
+  AlertCircle,
+  Loader2Icon,
+} from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 
-export default function SignupPage() {
-  const searchParams = useSearchParams()
+export function SignupForm() {
+  const searchParams = useSearchParams();
 
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     confirmPassword: "",
     role: searchParams.get("role") || "",
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false)
-  const [error, setError] = useState("")
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const router = useRouter()
-  const { signupWithEmail, loginWithGoogle } = useAuth()
+  const router = useRouter();
+  const { signupWithEmail, loginWithGoogle } = useAuth();
 
   const validateForm = () => {
-    const newErrors: Record<string, string> = {}
+    const newErrors: Record<string, string> = {};
 
     if (!formData.email) {
-      newErrors.email = "Email is required"
+      newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email"
+      newErrors.email = "Please enter a valid email";
     }
 
     if (!formData.password) {
-      newErrors.password = "Password is required"
+      newErrors.password = "Password is required";
     } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters"
+      newErrors.password = "Password must be at least 6 characters";
     }
 
     if (!formData.confirmPassword) {
-      newErrors.confirmPassword = "Please confirm your password"
+      newErrors.confirmPassword = "Please confirm your password";
     } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match"
+      newErrors.confirmPassword = "Passwords do not match";
     }
 
     if (!formData.role) {
-      newErrors.role = "Please select a role"
+      newErrors.role = "Please select a role";
     }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
+    setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: "" }))
+      setErrors((prev) => ({ ...prev, [field]: "" }));
     }
-    if (error) setError("")
-  }
+    if (error) setError("");
+  };
 
   const handleSignup = async () => {
-    if (!validateForm()) return
+    if (!validateForm()) return;
 
-    setIsLoading(true)
-    setError("")
+    setIsLoading(true);
+    setError("");
 
     try {
-      const userRole = await signupWithEmail(formData.email, formData.password, formData.role)
-      router.push("/sign-in")
+      const userRole = await signupWithEmail(
+        formData.email,
+        formData.password,
+        formData.role
+      );
+      router.push("/sign-in");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Signup failed. Please try again.")
+      setError(
+        err instanceof Error ? err.message : "Signup failed. Please try again."
+      );
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleGoogleSignup = async () => {
     if (!formData.role) {
-      setError("Please select a role first")
-      return
+      setError("Please select a role first");
+      return;
     }
 
-    setIsGoogleLoading(true)
-    setError("")
+    setIsGoogleLoading(true);
+    setError("");
 
     try {
-      const userRole = await loginWithGoogle(formData.role)
-      router.push(`/dashboard/${userRole}`)
+      const userRole = await loginWithGoogle(formData.role);
+      router.push(`/dashboard/${userRole}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Google signup failed. Please try again.")
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Google signup failed. Please try again."
+      );
     } finally {
-      setIsGoogleLoading(false)
+      setIsGoogleLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 p-4">
       <Card className="w-full max-w-md shadow-xl border-0 bg-white/80 backdrop-blur-sm">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center text-emerald-800">Create Account</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center text-emerald-800">
+            Create Account
+          </CardTitle>
           <CardDescription className="text-center text-emerald-600">
             Enter your details to create your account
           </CardDescription>
@@ -126,9 +160,14 @@ export default function SignupPage() {
             <Label htmlFor="role" className="text-emerald-700 font-medium">
               Role
             </Label>
-            <Select value={formData.role} onValueChange={(value) => handleInputChange("role", value)}>
+            <Select
+              value={formData.role}
+              onValueChange={(value) => handleInputChange("role", value)}
+            >
               <SelectTrigger
-                className={`border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400 ${errors.role ? "border-red-500" : ""}`}
+                className={`border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400 ${
+                  errors.role ? "border-red-500" : ""
+                }`}
               >
                 <SelectValue placeholder="Select your role" />
               </SelectTrigger>
@@ -147,7 +186,9 @@ export default function SignupPage() {
                 </SelectItem>
               </SelectContent>
             </Select>
-            {errors.role && <p className="text-sm text-red-500">{errors.role}</p>}
+            {errors.role && (
+              <p className="text-sm text-red-500">{errors.role}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -162,10 +203,14 @@ export default function SignupPage() {
                 placeholder="Enter your email"
                 value={formData.email}
                 onChange={(e) => handleInputChange("email", e.target.value)}
-                className={`pl-10 border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400 ${errors.email ? "border-red-500" : ""}`}
+                className={`pl-10 border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400 ${
+                  errors.email ? "border-red-500" : ""
+                }`}
               />
             </div>
-            {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
+            {errors.email && (
+              <p className="text-sm text-red-500">{errors.email}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -191,14 +236,23 @@ export default function SignupPage() {
                 className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-emerald-500 hover:text-emerald-600"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
               </Button>
             </div>
-            {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
+            {errors.password && (
+              <p className="text-sm text-red-500">{errors.password}</p>
+            )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword" className="text-emerald-700 font-medium">
+            <Label
+              htmlFor="confirmPassword"
+              className="text-emerald-700 font-medium"
+            >
               Confirm Password
             </Label>
             <div className="relative">
@@ -208,7 +262,9 @@ export default function SignupPage() {
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm your password"
                 value={formData.confirmPassword}
-                onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("confirmPassword", e.target.value)
+                }
                 className={`pl-10 pr-10 border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400 ${
                   errors.confirmPassword ? "border-red-500" : ""
                 }`}
@@ -220,10 +276,16 @@ export default function SignupPage() {
                 className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-emerald-500 hover:text-emerald-600"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
-                {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showConfirmPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
               </Button>
             </div>
-            {errors.confirmPassword && <p className="text-sm text-red-500">{errors.confirmPassword}</p>}
+            {errors.confirmPassword && (
+              <p className="text-sm text-red-500">{errors.confirmPassword}</p>
+            )}
           </div>
 
           <Button
@@ -246,7 +308,9 @@ export default function SignupPage() {
               <Separator className="w-full" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-2 text-emerald-600">Or continue with</span>
+              <span className="bg-white px-2 text-emerald-600">
+                Or continue with
+              </span>
             </div>
           </div>
 
@@ -290,12 +354,37 @@ export default function SignupPage() {
         <CardFooter>
           <p className="text-center text-sm text-emerald-600 w-full">
             Already have an account?{" "}
-            <Link href="/sign-in" className="font-medium text-teal-600 hover:text-teal-700 hover:underline">
+            <Link
+              href="/sign-in"
+              className="font-medium text-teal-600 hover:text-teal-700 hover:underline"
+            >
               Sign in
             </Link>
           </p>
         </CardFooter>
       </Card>
     </div>
-  )
+  );
 }
+
+export default function SignUpPage() {
+  return (
+    <Suspense
+      fallback={
+        <>
+          <Loader />
+        </>
+      }
+    >
+      <SignupForm />
+    </Suspense>
+  );
+}
+
+export const Loader = () => {
+  return (
+    <div className="w-full h-screen flex items-center justify-center">
+      <Loader2Icon className="h-12 w-12 animate-spin" />
+    </div>
+  );
+};
