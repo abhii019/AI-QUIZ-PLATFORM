@@ -34,6 +34,20 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 
+export default function SignUpPage() {
+  return (
+    <Suspense
+      fallback={
+        <>
+          <Loader />
+        </>
+      }
+    >
+      <SignupForm />
+    </Suspense>
+  );
+}
+
 export function SignupForm() {
   const searchParams = useSearchParams();
 
@@ -364,20 +378,6 @@ export function SignupForm() {
         </CardFooter>
       </Card>
     </div>
-  );
-}
-
-export default function SignUpPage() {
-  return (
-    <Suspense
-      fallback={
-        <>
-          <Loader />
-        </>
-      }
-    >
-      <SignupForm />
-    </Suspense>
   );
 }
 
