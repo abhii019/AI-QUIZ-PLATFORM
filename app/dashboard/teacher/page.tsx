@@ -22,7 +22,6 @@ export default function TeacherDashboardPage() {
 
     if (!user) {
       router.push("/sign-in");
-      console.log(user);
       return;
     }
 

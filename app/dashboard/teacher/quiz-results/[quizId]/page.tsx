@@ -24,21 +24,22 @@ import type { Timestamp } from "firebase/firestore";
 export default function TeacherQuizResultsPage() {
   const params = useParams();
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loader, setLoader] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (loading) return;
+
     if (!user) {
       router.push("/sign-in");
       return;
     }
 
     const fetchQuizResults = async () => {
-      setLoading(true);
+      setLoader(true);
       setError(null);
 
       try {
@@ -67,12 +68,12 @@ export default function TeacherQuizResultsPage() {
         console.error("Error fetching quiz results:", err);
         setError(err.message || "Failed to load quiz results");
       } finally {
-        setLoading(false);
+        setLoader(false);
       }
     };
 
     fetchQuizResults();
-  }, [params.quizId, user, router]);
+  }, [params.quizId, user, router, loading]);
 
   const getRankIcon = (rank: number) => {
     if (rank === 1) return <Trophy className="h-5 w-5 text-yellow-500" />;
@@ -120,7 +121,7 @@ export default function TeacherQuizResultsPage() {
 
   const stats = calculateStats();
 
-  if (loading) {
+  if (loader) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-600 flex items-center justify-center p-6">
         <Card className="w-full max-w-md backdrop-blur-sm bg-white/90 border-0 shadow-2xl">
@@ -319,14 +320,6 @@ export default function TeacherQuizResultsPage() {
                         submission.score,
                         quiz.questions.length
                       );
-
-                      // Debug logging to check email issue
-                      console.log("Teacher results submission:", {
-                        id: submission.id,
-                        studentId: submission.studentId,
-                        studentEmail: submission.studentEmail,
-                        score: submission.score,
-                      });
 
                       return (
                         <tr
