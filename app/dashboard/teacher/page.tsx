@@ -1,76 +1,80 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { firestoreDb, type Quiz } from "@/lib/db"
-import { PlusCircle, LogOut, Clock, X, ClockFading } from "lucide-react"
-import { useEffect, useState } from "react"
-import { useAuth } from "@/hooks/use-auth"
-import { useRouter } from "next/navigation"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { firestoreDb, type Quiz } from "@/lib/db";
+import { PlusCircle, LogOut, Clock, X, ClockFading } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
+import { useRouter } from "next/navigation";
 
 export default function TeacherDashboardPage() {
-  const [quizzes, setQuizzes] = useState<Quiz[]>([])
-  const [loadingQuizzes, setLoadingQuizzes] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [deletingQuiz, setDeletingQuiz] = useState<string | null>(null)
-  const { user, logout, loading } = useAuth()
-  const router = useRouter()
+  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
+  const [loadingQuizzes, setLoadingQuizzes] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [deletingQuiz, setDeletingQuiz] = useState<string | null>(null);
+  const { user, logout, loading } = useAuth();
+  const router = useRouter();
 
+  useEffect(() => {
+    if (loading) return; // wait until Firebase resolves auth state
 
-useEffect(() => {
-  if (loading) return; // wait until Firebase resolves auth state
-
-  if (!user) {
-    router.push("/sign-in");
-    console.log(user);
-    return;
-  }
-
-  const fetchQuizzes = async () => {
-    setLoadingQuizzes(true);
-    setError(null);
-
-    try {
-      const fetchedQuizzes: Quiz[] = await firestoreDb.quizzes.getByTeacherId(user.uid);
-      setQuizzes(fetchedQuizzes);
-    } catch (err: any) {
-      console.error("Error fetching quizzes:", err);
-      setError(err.message || "Failed to load quizzes.");
-    } finally {
-      setLoadingQuizzes(false);
+    if (!user) {
+      router.push("/sign-in");
+      console.log(user);
+      return;
     }
-  };
 
-  fetchQuizzes();
-}, [user, loading, router]);
+    const fetchQuizzes = async () => {
+      setLoadingQuizzes(true);
+      setError(null);
 
+      try {
+        const fetchedQuizzes: Quiz[] = await firestoreDb.quizzes.getByTeacherId(
+          user.uid
+        );
+        setQuizzes(fetchedQuizzes);
+      } catch (err: any) {
+        console.error("Error fetching quizzes:", err);
+        setError(err.message || "Failed to load quizzes.");
+      } finally {
+        setLoadingQuizzes(false);
+      }
+    };
+
+    fetchQuizzes();
+  }, [user, loading, router]);
 
   const handleLogout = async () => {
     try {
-      await logout()
-      router.push("/")
+      await logout();
+      router.push("/");
     } catch (error) {
-      console.error("Logout error:", error)
+      console.error("Logout error:", error);
     }
-  }
+  };
 
   const handleDeleteQuiz = async (quizId: string) => {
-    if (!confirm("Are you sure you want to delete this quiz? This action cannot be undone.")) {
-      return
+    if (
+      !confirm(
+        "Are you sure you want to delete this quiz? This action cannot be undone."
+      )
+    ) {
+      return;
     }
 
-    setDeletingQuiz(quizId)
+    setDeletingQuiz(quizId);
     try {
-      await firestoreDb.quizzes.delete(quizId)
-      setQuizzes(quizzes.filter((quiz) => quiz.id !== quizId))
+      await firestoreDb.quizzes.delete(quizId);
+      setQuizzes(quizzes.filter((quiz) => quiz.id !== quizId));
     } catch (err: any) {
-      console.error("Error deleting quiz:", err)
-      alert("Failed to delete quiz. Please try again.")
+      console.error("Error deleting quiz:", err);
+      alert("Failed to delete quiz. Please try again.");
     } finally {
-      setDeletingQuiz(null)
+      setDeletingQuiz(null);
     }
-  }
+  };
 
   if (!user) {
     return (
@@ -80,7 +84,7 @@ useEffect(() => {
           <p>Loading...</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (loadingQuizzes) {
@@ -91,7 +95,7 @@ useEffect(() => {
           <p>Loading dashboard...</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -101,7 +105,7 @@ useEffect(() => {
           <p className="text-red-200">Error: {error}</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -109,11 +113,16 @@ useEffect(() => {
       <div className="container mx-auto">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-white drop-shadow-lg">Teacher Dashboard</h1>
+            <h1 className="text-3xl font-bold text-white drop-shadow-lg">
+              Teacher Dashboard
+            </h1>
             <p className="text-emerald-100">Welcome back, {user.email}</p>
           </div>
           <div className="flex gap-2">
-            <Button asChild className="bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/30">
+            <Button
+              asChild
+              className="bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/30"
+            >
               <Link href="/dashboard/teacher/create-quiz">
                 <PlusCircle className="mr-2 h-4 w-4" /> Create New Quiz
               </Link>
@@ -128,12 +137,15 @@ useEffect(() => {
           </div>
         </div>
 
-        <h2 className="text-2xl font-semibold mb-4 text-white drop-shadow">Your Quizzes</h2>
+        <h2 className="text-2xl font-semibold mb-4 text-white drop-shadow">
+          Your Quizzes
+        </h2>
         {quizzes.length === 0 ? (
           <Card className="backdrop-blur-sm bg-white/90 border-0 shadow-xl">
             <CardContent className="p-8 text-center">
               <p className="text-gray-600">
-                You haven't created any quizzes yet. Click "Create New Quiz" to get started!
+                You haven't created any quizzes yet. Click "Create New Quiz" to
+                get started!
               </p>
             </CardContent>
           </Card>
@@ -159,24 +171,35 @@ useEffect(() => {
                 </button>
 
                 <CardHeader>
-                  <CardTitle className="text-gray-800">{quiz.subject} Quiz</CardTitle>
+                  <CardTitle className="text-gray-800">
+                    {quiz.subject} Quiz
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <p className="text-sm text-gray-600">Difficulty: {quiz.difficulty}</p>
-                    <p className="text-sm text-gray-600">Questions: {quiz.questions.length}</p>
+                    <p className="text-sm text-gray-600">
+                      Difficulty: {quiz.difficulty}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      Questions: {quiz.questions.length}
+                    </p>
                     <div className="flex items-center gap-2 text-sm text-emerald-600">
                       <Clock className="h-4 w-4" />
                       <span>Time Limit: {quiz.timeLimit || 30} minutes</span>
                     </div>
                     <p className="text-sm text-gray-600">
-                      Room Code: <span className="font-mono font-bold text-emerald-600">{quiz.roomCode}</span>
+                      Room Code:{" "}
+                      <span className="font-mono font-bold text-emerald-600">
+                        {quiz.roomCode}
+                      </span>
                     </p>
                     <p className="text-sm text-gray-600">
                       Created:{" "}
                       {quiz.createdAt instanceof Date
                         ? quiz.createdAt.toLocaleDateString()
-                        : new Date(quiz.createdAt.seconds * 1000).toLocaleDateString()}
+                        : new Date(
+                            quiz.createdAt.seconds * 1000
+                          ).toLocaleDateString()}
                     </p>
                   </div>
                   <div className="mt-4 flex flex-col space-y-2">
@@ -188,8 +211,13 @@ useEffect(() => {
                         View Test
                       </Button>
                     </Link>
-                    <Link href={`/dashboard/teacher/quiz-results/${quiz.id}`} passHref>
-                      <Button className="w-full bg-emerald-600 hover:bg-emerald-700">View Results</Button>
+                    <Link
+                      href={`/dashboard/teacher/quiz-results/${quiz.id}`}
+                      passHref
+                    >
+                      <Button className="w-full bg-emerald-600 hover:bg-emerald-700">
+                        View Results
+                      </Button>
                     </Link>
                   </div>
                 </CardContent>
@@ -199,5 +227,5 @@ useEffect(() => {
         )}
       </div>
     </div>
-  )
+  );
 }
