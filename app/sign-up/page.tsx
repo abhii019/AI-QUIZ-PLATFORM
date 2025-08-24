@@ -1,5 +1,5 @@
 "use client"
-import { Suspense,useState } from "react"
+import { useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -105,8 +105,6 @@ export default function SignupPage() {
   }
 
   return (
-        <Suspense fallback={<div>Loading signup...</div>}>
-
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 p-4">
       <Card className="w-full max-w-md shadow-xl border-0 bg-white/80 backdrop-blur-sm">
         <CardHeader className="space-y-1">
@@ -299,8 +297,5 @@ export default function SignupPage() {
         </CardFooter>
       </Card>
     </div>
-        </Suspense>
-
   )
-  
 }
