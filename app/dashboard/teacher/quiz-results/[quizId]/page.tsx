@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useParams, useRouter } from "next/navigation"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { firestoreDb, type Quiz, type Submission } from "@/lib/db"
-import { useAuth } from "@/hooks/use-auth"
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { firestoreDb, type Quiz, type Submission } from "@/lib/db";
+import { useAuth } from "@/hooks/use-auth";
 import {
   ArrowLeft,
   Trophy,
@@ -18,91 +18,96 @@ import {
   Mail,
   Calendar,
   Target,
-} from "lucide-react"
-import type { Timestamp } from "firebase/firestore"
+} from "lucide-react";
+import type { Timestamp } from "firebase/firestore";
 
 export default function TeacherQuizResultsPage() {
-  const params = useParams()
-  const router = useRouter()
-  const { user } = useAuth()
-  const [quiz, setQuiz] = useState<Quiz | null>(null)
-  const [submissions, setSubmissions] = useState<Submission[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const params = useParams();
+  const router = useRouter();
+  const { user } = useAuth();
+  const [quiz, setQuiz] = useState<Quiz | null>(null);
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (loading) return;
     if (!user) {
-      router.push("/sign-in")
-      return
+      router.push("/sign-in");
+      return;
     }
 
     const fetchQuizResults = async () => {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
 
       try {
-        const quizId = params.quizId as string
-        const quizData = await firestoreDb.quizzes.getById(quizId)
+        const quizId = params.quizId as string;
+        const quizData = await firestoreDb.quizzes.getById(quizId);
 
         if (!quizData) {
-          setError("Quiz not found")
-          return
+          setError("Quiz not found");
+          return;
         }
 
         // Check if the teacher owns this quiz
         if (quizData.teacherId !== user.uid) {
-          setError("You don't have permission to view this quiz")
-          return
+          setError("You don't have permission to view this quiz");
+          return;
         }
 
-        setQuiz(quizData)
+        setQuiz(quizData);
 
         // Fetch submissions for this quiz
-        const submissionsData = await firestoreDb.submissions.getByQuizId(quizId)
-        setSubmissions(submissionsData)
+        const submissionsData = await firestoreDb.submissions.getByQuizId(
+          quizId
+        );
+        setSubmissions(submissionsData);
       } catch (err: any) {
-        console.error("Error fetching quiz results:", err)
-        setError(err.message || "Failed to load quiz results")
+        console.error("Error fetching quiz results:", err);
+        setError(err.message || "Failed to load quiz results");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchQuizResults()
-  }, [params.quizId, user, router])
+    fetchQuizResults();
+  }, [params.quizId, user, router]);
 
   const getRankIcon = (rank: number) => {
-    if (rank === 1) return <Trophy className="h-5 w-5 text-yellow-500" />
-    if (rank === 2) return <Medal className="h-5 w-5 text-gray-400" />
-    if (rank === 3) return <Award className="h-5 w-5 text-amber-600" />
-    return null
-  }
+    if (rank === 1) return <Trophy className="h-5 w-5 text-yellow-500" />;
+    if (rank === 2) return <Medal className="h-5 w-5 text-gray-400" />;
+    if (rank === 3) return <Award className="h-5 w-5 text-amber-600" />;
+    return null;
+  };
 
   const getScoreColor = (score: number, total: number) => {
-    const percentage = (score / total) * 100
-    if (percentage >= 80) return "text-green-600"
-    if (percentage >= 60) return "text-yellow-600"
-    return "text-red-600"
-  }
+    const percentage = (score / total) * 100;
+    if (percentage >= 80) return "text-green-600";
+    if (percentage >= 60) return "text-yellow-600";
+    return "text-red-600";
+  };
 
   const getScoreGrade = (score: number, total: number) => {
-    const percentage = (score / total) * 100
-    if (percentage >= 90) return "A+"
-    if (percentage >= 80) return "A"
-    if (percentage >= 70) return "B"
-    if (percentage >= 60) return "C"
-    if (percentage >= 50) return "D"
-    return "F"
-  }
+    const percentage = (score / total) * 100;
+    if (percentage >= 90) return "A+";
+    if (percentage >= 80) return "A";
+    if (percentage >= 70) return "B";
+    if (percentage >= 60) return "C";
+    if (percentage >= 50) return "D";
+    return "F";
+  };
 
   const calculateStats = () => {
-    if (submissions.length === 0) return null
+    if (submissions.length === 0) return null;
 
-    const totalScore = submissions.reduce((sum, sub) => sum + sub.score, 0)
-    const averageScore = totalScore / submissions.length
-    const maxScore = Math.max(...submissions.map((sub) => sub.score))
-    const minScore = Math.min(...submissions.map((sub) => sub.score))
-    const passCount = submissions.filter((sub) => (sub.score / quiz!.questions.length) * 100 >= 60).length
+    const totalScore = submissions.reduce((sum, sub) => sum + sub.score, 0);
+    const averageScore = totalScore / submissions.length;
+    const maxScore = Math.max(...submissions.map((sub) => sub.score));
+    const minScore = Math.min(...submissions.map((sub) => sub.score));
+    const passCount = submissions.filter(
+      (sub) => (sub.score / quiz!.questions.length) * 100 >= 60
+    ).length;
 
     return {
       averageScore: averageScore.toFixed(1),
@@ -110,10 +115,10 @@ export default function TeacherQuizResultsPage() {
       minScore,
       passCount,
       passRate: ((passCount / submissions.length) * 100).toFixed(1),
-    }
-  }
+    };
+  };
 
-  const stats = calculateStats()
+  const stats = calculateStats();
 
   if (loading) {
     return (
@@ -124,11 +129,13 @@ export default function TeacherQuizResultsPage() {
               <div className="animate-spin rounded-full h-16 w-16 border-4 border-emerald-200 border-t-emerald-600 mx-auto"></div>
               <div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-200 border-t-teal-600 mx-auto absolute top-2 left-1/2 transform -translate-x-1/2"></div>
             </div>
-            <p className="text-lg text-gray-700 font-medium">Loading quiz results...</p>
+            <p className="text-lg text-gray-700 font-medium">
+              Loading quiz results...
+            </p>
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -141,14 +148,17 @@ export default function TeacherQuizResultsPage() {
               <p className="text-xl font-semibold">Error Loading Results</p>
               <p className="text-sm">{error}</p>
             </div>
-            <Button onClick={() => router.push("/dashboard/teacher")} className="bg-emerald-600 hover:bg-emerald-700">
+            <Button
+              onClick={() => router.push("/dashboard/teacher")}
+              className="bg-emerald-600 hover:bg-emerald-700"
+            >
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Dashboard
             </Button>
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   if (!quiz) {
@@ -167,7 +177,7 @@ export default function TeacherQuizResultsPage() {
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   return (
@@ -176,7 +186,9 @@ export default function TeacherQuizResultsPage() {
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-white drop-shadow-lg">{quiz.subject} Quiz Results</h1>
+            <h1 className="text-3xl font-bold text-white drop-shadow-lg">
+              {quiz.subject} Quiz Results
+            </h1>
             <p className="text-emerald-100">Room Code: {quiz.roomCode}</p>
           </div>
           <Button
@@ -196,8 +208,12 @@ export default function TeacherQuizResultsPage() {
               <div className="flex items-center">
                 <Users className="h-8 w-8 text-emerald-600 mr-3" />
                 <div>
-                  <p className="text-sm text-emerald-600 font-medium">Total Students</p>
-                  <p className="text-2xl font-bold text-emerald-800">{submissions.length}</p>
+                  <p className="text-sm text-emerald-600 font-medium">
+                    Total Students
+                  </p>
+                  <p className="text-2xl font-bold text-emerald-800">
+                    {submissions.length}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -208,9 +224,13 @@ export default function TeacherQuizResultsPage() {
               <div className="flex items-center">
                 <Target className="h-8 w-8 text-teal-600 mr-3" />
                 <div>
-                  <p className="text-sm text-teal-600 font-medium">Average Score</p>
+                  <p className="text-sm text-teal-600 font-medium">
+                    Average Score
+                  </p>
                   <p className="text-2xl font-bold text-teal-800">
-                    {stats ? `${stats.averageScore}/${quiz.questions.length}` : "N/A"}
+                    {stats
+                      ? `${stats.averageScore}/${quiz.questions.length}`
+                      : "N/A"}
                   </p>
                 </div>
               </div>
@@ -223,7 +243,9 @@ export default function TeacherQuizResultsPage() {
                 <BarChart3 className="h-8 w-8 text-cyan-600 mr-3" />
                 <div>
                   <p className="text-sm text-cyan-600 font-medium">Pass Rate</p>
-                  <p className="text-2xl font-bold text-cyan-800">{stats ? `${stats.passRate}%` : "N/A"}</p>
+                  <p className="text-2xl font-bold text-cyan-800">
+                    {stats ? `${stats.passRate}%` : "N/A"}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -234,8 +256,12 @@ export default function TeacherQuizResultsPage() {
               <div className="flex items-center">
                 <Clock className="h-8 w-8 text-emerald-600 mr-3" />
                 <div>
-                  <p className="text-sm text-emerald-600 font-medium">Time Limit</p>
-                  <p className="text-2xl font-bold text-emerald-800">{quiz.timeLimit || 30}m</p>
+                  <p className="text-sm text-emerald-600 font-medium">
+                    Time Limit
+                  </p>
+                  <p className="text-2xl font-bold text-emerald-800">
+                    {quiz.timeLimit || 30}m
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -246,7 +272,9 @@ export default function TeacherQuizResultsPage() {
         <Card className="shadow-2xl backdrop-blur-sm bg-white/95 border-0">
           <CardHeader>
             <div className="flex justify-between items-center">
-              <CardTitle className="text-xl font-bold text-gray-800">Student Results</CardTitle>
+              <CardTitle className="text-xl font-bold text-gray-800">
+                Student Results
+              </CardTitle>
               <Button
                 variant="outline"
                 size="sm"
@@ -261,8 +289,12 @@ export default function TeacherQuizResultsPage() {
             {submissions.length === 0 ? (
               <div className="text-center py-12">
                 <Users className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                <p className="text-lg text-gray-600">No students have taken this quiz yet</p>
-                <p className="text-sm text-gray-500">Share the room code with your students to get started</p>
+                <p className="text-lg text-gray-600">
+                  No students have taken this quiz yet
+                </p>
+                <p className="text-sm text-gray-500">
+                  Share the room code with your students to get started
+                </p>
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -279,8 +311,14 @@ export default function TeacherQuizResultsPage() {
                   </thead>
                   <tbody>
                     {submissions.map((submission, index) => {
-                      const percentage = ((submission.score / quiz.questions.length) * 100).toFixed(1)
-                      const grade = getScoreGrade(submission.score, quiz.questions.length)
+                      const percentage = (
+                        (submission.score / quiz.questions.length) *
+                        100
+                      ).toFixed(1);
+                      const grade = getScoreGrade(
+                        submission.score,
+                        quiz.questions.length
+                      );
 
                       // Debug logging to check email issue
                       console.log("Teacher results submission:", {
@@ -288,7 +326,7 @@ export default function TeacherQuizResultsPage() {
                         studentId: submission.studentId,
                         studentEmail: submission.studentEmail,
                         score: submission.score,
-                      })
+                      });
 
                       return (
                         <tr
@@ -307,17 +345,28 @@ export default function TeacherQuizResultsPage() {
                             <div className="flex items-center gap-2">
                               <Mail className="h-4 w-4 text-gray-400" />
                               <span className="font-medium text-gray-800">
-                                {submission.studentEmail || `Student ${submission.studentId.slice(-4)}`}
+                                {submission.studentEmail ||
+                                  `Student ${submission.studentId.slice(-4)}`}
                               </span>
                             </div>
                           </td>
                           <td className="py-4 px-6 border-b">
-                            <span className={`font-bold ${getScoreColor(submission.score, quiz.questions.length)}`}>
+                            <span
+                              className={`font-bold ${getScoreColor(
+                                submission.score,
+                                quiz.questions.length
+                              )}`}
+                            >
                               {submission.score} / {quiz.questions.length}
                             </span>
                           </td>
                           <td className="py-4 px-6 border-b">
-                            <span className={`font-semibold ${getScoreColor(submission.score, quiz.questions.length)}`}>
+                            <span
+                              className={`font-semibold ${getScoreColor(
+                                submission.score,
+                                quiz.questions.length
+                              )}`}
+                            >
                               {percentage}%
                             </span>
                           </td>
@@ -327,12 +376,12 @@ export default function TeacherQuizResultsPage() {
                                 grade === "A+" || grade === "A"
                                   ? "bg-green-100 text-green-800"
                                   : grade === "B"
-                                    ? "bg-blue-100 text-blue-800"
-                                    : grade === "C"
-                                      ? "bg-yellow-100 text-yellow-800"
-                                      : grade === "D"
-                                        ? "bg-orange-100 text-orange-800"
-                                        : "bg-red-100 text-red-800"
+                                  ? "bg-blue-100 text-blue-800"
+                                  : grade === "C"
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : grade === "D"
+                                  ? "bg-orange-100 text-orange-800"
+                                  : "bg-red-100 text-red-800"
                               }`}
                             >
                               {grade}
@@ -341,11 +390,13 @@ export default function TeacherQuizResultsPage() {
                           <td className="py-4 px-6 border-b text-sm text-gray-600">
                             <div className="flex items-center gap-2">
                               <Calendar className="h-4 w-4 text-gray-400" />
-                              {(submission.submittedAt as Timestamp).toDate().toLocaleString()}
+                              {(submission.submittedAt as Timestamp)
+                                .toDate()
+                                .toLocaleString()}
                             </div>
                           </td>
                         </tr>
-                      )
+                      );
                     })}
                   </tbody>
                 </table>
@@ -355,5 +406,5 @@ export default function TeacherQuizResultsPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }
