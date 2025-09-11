@@ -87,8 +87,15 @@ export function QuizClientWrapper({
 
   if (!user) {
     return (
-      <div className="text-center p-8 text-red-500">
-        Please log in to take this quiz.
+      <div className="text-center p-8">
+        <p className="text-red-500 mb-4">Please log in to take this quiz.</p>
+        <Button  className="w-20 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg"
+
+      
+          onClick={() => router.push("/sign-in")}
+        >
+          Log in
+        </Button>
       </div>
     );
   }
